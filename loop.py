@@ -1,7 +1,7 @@
-#Hyttecam 2.0 - This script takes a photo from two angles using a raspberry pi w/ camera and servo, and uploads them to a webserver.
-#Author: Gitle Mikkelsen
-#Version 0.1 14.01.18
-
+#loop.py
+#This script takes two photos from separate angles via a raspberry pi 
+#/w camera add-on and a servo, and uploads the photos to a webserver
+#Author: GrixM - Gitle Mikkelsen
 
 from ftplib import FTP
 import picamera
@@ -10,21 +10,26 @@ from PIL import Image, ImageDraw
 import RPi.GPIO as GPIO
 
 SERVO_PIN = 4;
+FTP_SERVER = 'ftp.bitlasers.com';
+FTP_USER = 'kvamskogen@bitlasers.com';
+FTP_PASSWORD = '';
+IMAGE_QUALITY = 80;
 
 #Move servo, capture photos and repeat
 try:
 	#Init camera
-	i = 10;
 	camera = picamera.PiCamera();
 	camera.resolution = (1280, 800);
 	camera.vflip = 1;
+	camera.hflip = 1;
 	GPIO.setmode(GPIO.BCM);
 	GPIO.setup(SERVO_PIN, GPIO.OUT);
 	time.sleep(1);
 	#Move servo to the left and capture left.jpg
+	i = 10;
 	while (i):
 		GPIO.output(SERVO_PIN, GPIO.HIGH);
-		time.sleep(0.0010);
+		time.sleep(0.0007);
 		GPIO.output(SERVO_PIN, GPIO.LOW);
 		time.sleep(0.02);
 		i -= 1;
@@ -34,7 +39,7 @@ try:
 	i = 10;
 	while (i):
 		GPIO.output(SERVO_PIN, GPIO.HIGH);
-		time.sleep(0.0020);
+		time.sleep(0.0023);
 		GPIO.output(SERVO_PIN, GPIO.LOW);
 		time.sleep(0.02);
 		i -= 1;
@@ -44,7 +49,7 @@ try:
 	time.sleep(1);
 	GPIO.cleanup();
 except:	
-	print "Unexpected error camera/servo:"
+	print "Unexpected error in camera/servo section"
 	raise
 
 #Append timestamp to and compress photos
@@ -60,11 +65,11 @@ try:
 	drawright.text( (1100, 770), ts);
 	drawleft.text( (1100, 770), ts);
 	#Save manipulated photos to rightfinal.jpg/leftfinal.jpg
-	imageright.save ('rightfinal.jpg', quality=75);
-	imageleft.save ('leftfinal.jpg', quality=75);
+	imageright.save ('rightfinal.jpg', quality=IMAGE_QUALITY);
+	imageleft.save ('leftfinal.jpg', quality=IMAGE_QUALITY);
 	time.sleep(1);
 except:	
-	print "Unexpected error photo manipulation:"
+	print "Unexpected error in photo manipulation section"
 	raise
 
 #Upload photos to FTP server
@@ -73,9 +78,9 @@ try:
 	photoleft = open("./leftfinal.jpg", "rb");
 	photoright = open("./rightfinal.jpg", "rb");
 	#Connect to FTP and store
-	ftp = FTP('ftp.bitlasers.com', 'kvamskogen@bitlasers.com', '');
+	ftp = FTP(FTP_SERVER, FTP_USER, FTP_PASSWORD);
 	ftp.storbinary("STOR right.jpg", photoright);
 	ftp.storbinary("STOR left.jpg", photoleft);
 except:	
-	print "Unexpected error FTP:"
+	print "Unexpected error in FTP section"
 	raise

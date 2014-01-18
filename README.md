@@ -1,4 +1,5 @@
-kvamskogencam
+KvamskogenCam
 =============
 
-Cam that takes a photo and uploads it to FTP every time period
+This is a python script designed to run on a raspberry pi with the camera addon attached to a servo,
+It takes two photos from different angles, processes them and uploads them to a webserver.
