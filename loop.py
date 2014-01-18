@@ -1,31 +1,41 @@
+#Hyttecam 2.0 - This script takes a photo from two angles using a raspberry pi w/ camera and servo, and uploads them to a webserver.
+#Author: Gitle Mikkelsen
+#Version 0.1 14.01.18
+
+
 from ftplib import FTP
 import picamera
 import time
 from PIL import Image, ImageDraw
 import RPi.GPIO as GPIO
 
+SERVO_PIN = 4;
+
 #Move servo, capture photos and repeat
 try:
 	#Init camera
 	i = 10;
 	camera = picamera.PiCamera();
-	camera.resolution = (800, 600);
-	GPIO.setup(4, GPIO.OUT);
+	camera.resolution = (1280, 800);
+	camera.vflip = 1;
+	GPIO.setmode(GPIO.BCM);
+	GPIO.setup(SERVO_PIN, GPIO.OUT);
 	time.sleep(1);
 	#Move servo to the left and capture left.jpg
 	while (i):
-		GPIO.output(4, GPIO.HIGH);
+		GPIO.output(SERVO_PIN, GPIO.HIGH);
 		time.sleep(0.0010);
-		GPIO.output(4, GPIO.LOW);
+		GPIO.output(SERVO_PIN, GPIO.LOW);
 		time.sleep(0.02);
 		i -= 1;
 	time.sleep(1);
 	camera.capture('left.jpg');
 	#Move servo to the right and capture right.jpg
+	i = 10;
 	while (i):
-		GPIO.output(4, GPIO.HIGH);
+		GPIO.output(SERVO_PIN, GPIO.HIGH);
 		time.sleep(0.0020);
-		GPIO.output(4, GPIO.LOW);
+		GPIO.output(SERVO_PIN, GPIO.LOW);
 		time.sleep(0.02);
 		i -= 1;
 	time.sleep(1);
@@ -47,11 +57,11 @@ try:
 	drawright = ImageDraw.Draw(imageright);
 	drawleft = ImageDraw.Draw(imageleft);
 	#Draw the timestamp
-	drawright.text( (300, 50), ts);
-	drawleft.text( (300, 50), ts);
+	drawright.text( (1100, 770), ts);
+	drawleft.text( (1100, 770), ts);
 	#Save manipulated photos to rightfinal.jpg/leftfinal.jpg
-	imageright.save ('rightfinal.jpg', quality=85);
-	imageleft.save ('leftfinal.jpg', quality=85);
+	imageright.save ('rightfinal.jpg', quality=75);
+	imageleft.save ('leftfinal.jpg', quality=75);
 	time.sleep(1);
 except:	
 	print "Unexpected error photo manipulation:"
