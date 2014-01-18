@@ -10,29 +10,31 @@ try:
 	i = 10;
 	camera = picamera.PiCamera();
 	camera.resolution = (800, 600);
+	GPIO.setup(4, GPIO.OUT);
 	time.sleep(1);
 	#Move servo to the left and capture left.jpg
 	while (i):
-		GPIO.output(pin, GPIO.HIGH);
-		time.sleep(0.0011);
-		GPIO.output(pin, GPIO.LOW);
+		GPIO.output(4, GPIO.HIGH);
+		time.sleep(0.0010);
+		GPIO.output(4, GPIO.LOW);
 		time.sleep(0.02);
 		i -= 1;
 	time.sleep(1);
 	camera.capture('left.jpg');
 	#Move servo to the right and capture right.jpg
 	while (i):
-		GPIO.output(pin, GPIO.HIGH);
-		time.sleep(0.0019);
-		GPIO.output(pin, GPIO.LOW);
+		GPIO.output(4, GPIO.HIGH);
+		time.sleep(0.0020);
+		GPIO.output(4, GPIO.LOW);
 		time.sleep(0.02);
 		i -= 1;
 	time.sleep(1);
 	camera.capture('right.jpg');
 	camera.close();
 	time.sleep(1);
+	GPIO.cleanup();
 except:	
-	print "Unexpected error camera/servo:", sys.exc_info()[0]
+	print "Unexpected error camera/servo:"
 	raise
 
 #Append timestamp to and compress photos
@@ -52,7 +54,7 @@ try:
 	imageleft.save ('leftfinal.jpg', quality=85);
 	time.sleep(1);
 except:	
-	print "Unexpected error photo manipulation:", sys.exc_info()[0]
+	print "Unexpected error photo manipulation:"
 	raise
 
 #Upload photos to FTP server
@@ -65,5 +67,5 @@ try:
 	ftp.storbinary("STOR right.jpg", photoright);
 	ftp.storbinary("STOR left.jpg", photoleft);
 except:	
-	print "Unexpected error FTP:", sys.exc_info()[0]
+	print "Unexpected error FTP:"
 	raise
