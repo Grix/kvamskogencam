@@ -15,6 +15,10 @@ FTP_USER = 'kvamskogen@bitlasers.com';
 FTP_PASSWORD = '';
 IMAGE_QUALITY = 80;
 
+
+if (time.localtime().tm_hour < 7):
+	exit(0);
+
 #Move servo, capture photos and repeat
 try:
 	#Init camera
