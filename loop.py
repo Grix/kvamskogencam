@@ -10,12 +10,12 @@ from PIL import Image, ImageDraw
 import RPi.GPIO as GPIO
 
 SERVO_PIN = 4;
-FTP_SERVER = 'ftp.bitlasers.com';
-FTP_USER = 'kvamskogen@bitlasers.com';
+FTP_SERVER = '';
+FTP_USER = '';
 FTP_PASSWORD = '';
 IMAGE_QUALITY = 80;
 
-
+#This cancels the process during night to save bandwidth
 if (time.localtime().tm_hour < 7):
 	exit(0);
 
@@ -23,7 +23,9 @@ if (time.localtime().tm_hour < 7):
 try:
 	#Init camera
 	camera = picamera.PiCamera();
+	#Here you can edit resolution
 	camera.resolution = (1280, 800);
+	#I flip the image because my camera is mounted upside down
 	camera.vflip = 1;
 	camera.hflip = 1;
 	GPIO.setmode(GPIO.BCM);
@@ -33,6 +35,7 @@ try:
 	i = 10;
 	while (i):
 		GPIO.output(SERVO_PIN, GPIO.HIGH);
+		#You can edit the following number to change camera angle of the first photo
 		time.sleep(0.0007);
 		GPIO.output(SERVO_PIN, GPIO.LOW);
 		time.sleep(0.02);
@@ -43,6 +46,7 @@ try:
 	i = 10;
 	while (i):
 		GPIO.output(SERVO_PIN, GPIO.HIGH);
+		#You can edit the following number to change camera angle of the second photo
 		time.sleep(0.0023);
 		GPIO.output(SERVO_PIN, GPIO.LOW);
 		time.sleep(0.02);
